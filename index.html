@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optical Budget Calculator</title>
+    <style>
+        :root {
+            --bg-color: #0b132b;
+            --card-bg: #1c2541;
+            --accent-blue: #4fa3a5;
+            --text-color: #ffffff;
+            --text-muted: #95a5a6;
+            --safe-green: #2ecc71;
+            --danger-orange: #e67e22;
+            --warning-red: #e74c3c;
+            --critical-dark-red: #c0392b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            gap: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h2, h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            font-size: 24px;
+            border-bottom: 2px solid var(--accent-blue);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 13px;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+        }
+
+        input, select, textarea {
+            background-color: #0b132b;
+            border: 1px solid #3a506b;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 15px;
+            width: 100%;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .btn-calc, .btn-submit {
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .btn-calc:hover, .btn-submit:hover {
+            background-color: #3b8284;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #0b132b;
+            border-left: 5px solid #3a506b;
+            display: none;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .suggestion-box {
+            margin-top: 12px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .developer-container {
+            margin-top: 10px;
+            border-top: 3px solid var(--accent-blue);
+        }
+        .dev-profile {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 10px 5px;
+        }
+        .dev-avatar {
+            width: 80px;
+            height: 80px;
+            background: #0b132b;
+            padding: 15px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-blue);
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dev-details h4 {
+            font-size: 18px;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        .dev-details p {
+            font-size: 14px;
+            color: var(--accent-blue);
+            margin-bottom: 12px;
+        }
+        .dev-contact-info p {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        .dev-contact-info svg {
+            width: 16px;
+            height: 16px;
+            color: var(--accent-blue);
+        }
+        .dev-social-links {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .dev-social-links a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #ffffff;
+            text-decoration: none;
+            background: #3a506b;
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+        .dev-social-links svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+        .dev-social-links a:hover {
+            background: var(--accent-blue);
+        }
+
+        @media (max-width: 480px) {
+            .row {
+                flex-direction: row;
+                gap: 8px;
+            }
+            input, select, textarea {
+                padding: 8px;
+                font-size: 14px;
+            }
+            label {
+                font-size: 11px;
+            }
+            .dev-profile {
+                flex-direction: column;
+                text-align: center;
+            }
+            .dev-social-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Optical Budget Calculator</h2>
+    
+    <div class="row">
+        <div class="input-group">
+            <label>Input Power (dBm)</label>
+            <input type="number" id="txPower" placeholder="e.g. 3" step="0.1">
+        </div>
+        <div class="input-group">
+            <label>Wavelength</label>
+            <select id="wavelength" onchange="updateAutoLoss()">
+                <option value="1490">1490 nm</option>
+                <option value="1310">1310 nm</option>
+                <option value="1550">1550 nm</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="input-group">
+            <label>Distance (km)</label>
+            <input type="number" id="distance" placeholder="0" step="0.1" oninput="updateAutoLoss()">
+        </div>
+        <div class="input-group">
+            <label>Loss/km (dB)</label>
+            <input type="number" id="att" value="0.23" step="0.01">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="input-group">
+            <label>Connector (Qty)</label>
+            <input type="number" id="connQty" value="2" min="0" step="1">
+        </div>
+        <div class="input-group">
+            <label>Joint/Splice (Qty)</label>
+            <input type="number" id="jointQty" value="2" min="0" step="1">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="input-group">
+            <label>Safety Margin (dB) — Fixed</label>
+            <input type="number" id="safetyMargin" value="1.0" readonly disabled style="opacity: 0.7; cursor: not-allowed;">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="input-group">
+            <label>Splitter Input Method</label>
+            <select id="splitterMode" onchange="toggleSplitterInput()">
+                <option value="dropdown">Standard Ratio</option>
+                <option value="manual">Manual Percentage (%)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="input-group" id="dropdownGroup">
+            <label>Select Ratio</label>
+            <select id="splitterDropdown">
+                <option value="3.5">1:2 (~3.5 dB)</option>
+                <option value="7.2">1:4 (~7.2 dB)</option>
+                <option value="10.5">1:8 (~10.5 dB)</option>
+                <option value="13.8" selected>1:16 (~13.8 dB)</option>
+                <option value="17.0">1:32 (~17.0 dB)</option>
+                <option value="20.5">1:64 (~20.5 dB)</option>
+                <option value="14.0">5/95 Tap (~14.0 dB)</option>
+                <option value="10.5">10/90 Tap (~10.5 dB)</option>
+                <option value="8.5">15/85 Tap (~8.5 dB)</option>
+                <option value="7.2">20/80 Tap (~7.2 dB)</option>
+            </select>
+        </div>
+        <div class="input-group" id="manualGroup" style="display: none;">
+            <label>Manual Loss (%)</label>
+            <input type="number" id="splitterPercent" value="50" min="0.1" max="100" step="0.1">
+        </div>
+    </div>
+
+    <button class="btn-calc" onclick="calculateBudget()">Calculate Budget</button>
+
+    <div class="result-box" id="resultBox">
+        <div class="result-item">
+            <span>Fiber Line Loss (Dist × Loss):</span>
+            <span id="resLineLoss">0.00 dB</span>
+        </div>
+        <div class="result-item">
+            <span>Conn & Splice Loss (0.3/0.1 Std):</span>
+            <span id="resHardwareLoss">0.00 dB</span>
+        </div>
+        <div class="result-item">
+            <span>Splitter Loss Applied:</span>
+            <span id="resSplitterLoss">0.00 dB</span>
+        </div>
+        <div class="result-item">
+            <span>Safety Margin:</span>
+            <span id="resSafetyMargin">0.00 dB</span>
+        </div>
+        <div class="result-item" style="border-top: 1px dashed #3a506b; padding-top: 8px;">
+            <strong>Calculated Rx Power:</strong>
+            <strong id="resFinalPower">0.00 dBm</strong>
+        </div>
+        <div class="result-item" style="margin-top: 15px;">
+            <span>Link Status:</span>
+            <span id="statusBadge" class="status-badge">SAFE</span>
+        </div>
+        <div class="suggestion-box">
+            <strong>System Suggestion:</strong>
+            <p id="suggestionText" style="margin-top: 5px; color: #ecf0f1;"></p>
+        </div>
+    </div>
+</div>
+
+<div class="container developer-container">
+    <h3>Developer Information</h3>
+    <div class="dev-profile">
+        <div class="dev-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        </div>
+        <div class="dev-details">
+            <h4>Md. Saim Miah</h4>
+            <p>Optical Network Engineer & Developer</p>
+            
+            <div class="dev-contact-info">
+                <p>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    <span>official.saim.bd@gmail.com</span>
+                </p>
+            </div>
+            
+            <div class="dev-social-links">
+                <a href="https://www.facebook.com/saim.isp.gtnetwork" target="_blank">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                    </svg>
+                    Facebook Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateAutoLoss() {
+        const wl = document.getElementById('wavelength').value;
+        const attField = document.getElementById('att');
+        
+        if (wl === "1490") attField.value = "0.23";
+        else if (wl === "1310") attField.value = "0.35";
+        else if (wl === "1550") attField.value = "0.20";
+    }
+
+    function toggleSplitterInput() {
+        const mode = document.getElementById('splitterMode').value;
+        const dropdownGroup = document.getElementById('dropdownGroup');
+        const manualGroup = document.getElementById('manualGroup');
+
+        if (mode === 'dropdown') {
+            dropdownGroup.style.display = 'flex';
+            manualGroup.style.display = 'none';
+        } else {
+            dropdownGroup.style.display = 'none';
+            manualGroup.style.display = 'flex';
+        }
+    }
+
+    function calculateBudget() {
+        const txPowerInput = document.getElementById('txPower').value;
+        if(txPowerInput === "") {
+            alert("অনুগ্রহ করে ইনপুট পাওয়ার (Input Power) টাইপ করুন।");
+            return;
+        }
+
+        const txPower = parseFloat(txPowerInput) || 0;
+        const distance = parseFloat(document.getElementById('distance').value) || 0;
+        const att = parseFloat(document.getElementById('att').value) || 0;
+        const connQty = parseInt(document.getElementById('connQty').value) || 0;
+        const jointQty = parseInt(document.getElementById('jointQty').value) || 0;
+        const safetyMargin = 1.0; // Fixed safety margin — not user-editable
+        
+        const splitterMode = document.getElementById('splitterMode').value;
+        let splitterLoss = 0;
+
+        if (splitterMode === 'dropdown') {
+            splitterLoss = parseFloat(document.getElementById('splitterDropdown').value);
+        } else {
+            const percent = parseFloat(document.getElementById('splitterPercent').value) || 100;
+            splitterLoss = 10 * Math.log10(100 / percent);
+        }
+
+        const connLossTotal = connQty * 0.3;
+        const jointLossTotal = jointQty * 0.1;
+        const hardwareLoss = connLossTotal + jointLossTotal;
+        const lineLoss = distance * att;
+        
+        const totalLoss = lineLoss + hardwareLoss + splitterLoss + safetyMargin;
+        const finalRxPower = txPower - totalLoss;
+
+        const resultBox = document.getElementById('resultBox');
+        document.getElementById('resLineLoss').innerText = lineLoss.toFixed(2) + " dB";
+        document.getElementById('resHardwareLoss').innerText = hardwareLoss.toFixed(2) + " dB";
+        document.getElementById('resSplitterLoss').innerText = splitterLoss.toFixed(2) + " dB";
+        document.getElementById('resSafetyMargin').innerText = safetyMargin.toFixed(2) + " dB";
+        document.getElementById('resFinalPower').innerText = finalRxPower.toFixed(2) + " dBm";
+
+        // Splitter option table used for "which splitter should I use" recommendations
+        const splitterCatalog = [
+            { name: "1:2 Splitter", loss: 3.5 },
+            { name: "20/80 Tap Splitter", loss: 7.2 },
+            { name: "1:4 Splitter", loss: 7.2 },
+            { name: "15/85 Tap Splitter", loss: 8.5 },
+            { name: "10/90 Tap Splitter", loss: 10.5 },
+            { name: "1:8 Splitter", loss: 10.5 },
+            { name: "1:16 Splitter", loss: 13.8 },
+            { name: "5/95 Tap Splitter", loss: 14.0 },
+            { name: "1:32 Splitter", loss: 17.0 },
+            { name: "1:64 Splitter", loss: 20.5 }
+        ];
+
+        // Budget available before the splitter (Tx power minus line + hardware loss + safety margin)
+        const preSplitterBudget = txPower - lineLoss - hardwareLoss - safetyMargin;
+        // Target the middle of the safe window (-25 to -18 dBm => -21.5 dBm)
+        const targetMidPower = -21.5;
+        // Ideal splitter loss needed to land in the middle of the safe zone
+        const idealSplitterLoss = preSplitterBudget - targetMidPower;
+
+        // Find the closest real-world splitter to that ideal loss value
+        let bestMatch = splitterCatalog[0];
+        let smallestDiff = Math.abs(splitterCatalog[0].loss - idealSplitterLoss);
+        splitterCatalog.forEach(opt => {
+            const diff = Math.abs(opt.loss - idealSplitterLoss);
+            if (diff < smallestDiff) {
+                smallestDiff = diff;
+                bestMatch = opt;
+            }
+        });
+        const recommendedText = `<strong>${bestMatch.name} (~${bestMatch.loss.toFixed(1)} dB)</strong>`;
+
+        let status = "";
+        let color = "";
+        let suggestion = "";
+
+        if (finalRxPower >= -25 && finalRxPower <= -18) {
+            status = "Safe";
+            color = "var(--safe-green)";
+            suggestion = `💥 <strong>Perfect Setup!</strong> এই সিগন্যাল লেভেলটি ওএনইউ (ONU) এর জন্য একদম আদর্শ। আপনার বর্তমান স্প্লিটার (${splitterLoss.toFixed(1)} dB) ও নেটওয়ার্ক ডিজাইন একদম সঠিক আছে — পরিবর্তনের দরকার নেই।`;
+        } 
+        else if (finalRxPower >= -17.9 && finalRxPower <= -7) {
+            status = "Danger";
+            color = "var(--danger-orange)";
+            let gap = finalRxPower - (-21);
+            
+            if (gap >= 13.5) {
+                suggestion = `⚠️ <strong>High Power Warning!</strong> সিগন্যাল অত্যন্ত কড়া। সেফ জোনে আনতে ${recommendedText} ব্যবহার করুন।`;
+            } else if (gap >= 10) {
+                suggestion = `⚠️ <strong>High Power Warning!</strong> সিগন্যাল বেশি। পাওয়ার ড্রপ করতে ${recommendedText} ব্যবহার করুন।`;
+            } else if (gap >= 7) {
+                suggestion = `⚠️ <strong>High Power Warning!</strong> পাওয়ার কমাতে লাইনে ${recommendedText} ব্যবহার নিশ্চিত করুন।`;
+            } else {
+                suggestion = `⚠️ <strong>High Power Warning!</strong> সিগন্যাল সামান্য বেশি। সেফ জোনে আসতে ${recommendedText} অথবা একটি Optical Attenuator ব্যবহার করুন।`;
+            }
+        } 
+        else if (finalRxPower >= -30 && finalRxPower <= -25.1) {
+            status = "Warning";
+            color = "var(--warning-red)";
+            suggestion = `🛑 <strong>Low Power Warning!</strong> সিগন্যাল অনেক দুর্বল যা ইন্টারনেটে ড্রপ তৈরি করতে পারে। ফাইবার ক্যাবলের প্যাচকর্ড বা স্প্লাইসিং জয়েন্ট চেক করুন। বর্তমান স্প্লিটারের বদলে ${recommendedText} ব্যবহার করলে সিগন্যাল সেফ জোনে আসবে।`;
+        } 
+        else {
+            status = "Critical";
+            color = "var(--critical-dark-red)";
+            if (idealSplitterLoss > 0 && idealSplitterLoss < 25) {
+                suggestion = `🚨 <strong>Out of Range!</strong> সিগন্যাল কার্যকর সীমার সম্পূর্ণ বাইরে। স্প্লিটার পরিবর্তন করে ${recommendedText} ব্যবহার করে দেখুন, তবে এর পাশাপাশি মূল লেজার সোর্স, ফাইবার কোর বা কানেক্টর ড্যামেজ আছে কি না সম্পূর্ণ চেক করুন।`;
+            } else {
+                suggestion = "🚨 <strong>Out of Range!</strong> সিগন্যাল কার্যকর সীমার সম্পূর্ণ বাইরে (-৭ এর বেশি কড়া বা -৩০ এর নিচে ডাউন)। কোনো স্প্লিটার দিয়েই এটি সমাধান হবে না — অনুগ্রহ করে মূল লেজার সোর্স, ফাইবার কোর বা কানেক্টর ড্যামেজ আছে কি না সম্পূর্ণ চেক করুন।";
+            }
+        }
+
+        document.getElementById('statusBadge').innerText = status;
+        document.getElementById('statusBadge').style.backgroundColor = color;
+        resultBox.style.borderLeftColor = color;
+        document.getElementById('suggestionText').innerHTML = suggestion;
+        resultBox.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
